@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"bytes"
 	"strings"
 	"testing"
 )
@@ -56,11 +57,12 @@ What's going on?</p>
 	}
 
 	for testNum, test := range tests {
-		output := MarkdownToHtml(strings.NewReader(test.expectedOutput))
+		var b bytes.Buffer
+		MarkdownToHtml(strings.NewReader(test.expectedOutput), &b)
 
-		if output != test.expectedOutput {
+		if b.String() != test.expectedOutput {
 			t.Errorf("%d:%s - incorrect output. wanted=%s, got=%s",
-				testNum, test.name, test.expectedOutput, output)
+				testNum, test.name, test.expectedOutput, b.String())
 		}
 	}
 }

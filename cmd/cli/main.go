@@ -17,25 +17,52 @@ func main() {
 }
 
 func run() error {
-	filename := flag.String("filename", "", "used to provide a file to convert")
+	sourceFilename := flag.String("in", "", "provide a file to convert")
+	destinationFilename := flag.String("out", "", "save conversion to a file")
+	helpFlag := flag.Bool("h", false, "print help")
 	flag.Parse()
 
-	areAllRequiredFlagsSet := false
+	if *helpFlag {
+		flag.Usage()
+		return nil
+	}
+
+	isFlagValueProvided := map[string]bool{
+		"in":  false,
+		"out": false,
+	}
+
 	flag.CommandLine.Visit(func(f *flag.Flag) {
-		if f.Name == "filename" {
-			areAllRequiredFlagsSet = true
+		if _, ok := isFlagValueProvided[f.Name]; ok {
+			isFlagValueProvided[f.Name] = true
 		}
 	})
 
-	if !areAllRequiredFlagsSet {
-		return errors.New("required parameters not passed in")
+	for flagName, isSet := range isFlagValueProvided {
+		if !isSet {
+			return fmt.Errorf("'%s' is required", flagName)
+		}
 	}
 
-	file, err := os.Open(*filename)
+	srcFile, err := os.Open(*sourceFilename)
 	if err != nil {
-		return errors.Wrap(err, "opening file")
+		return errors.Wrap(err, "opening source file")
+	}
+	defer srcFile.Close()
+
+	destFile, err := os.Create(*destinationFilename)
+	if err != nil {
+		srcFile.Close()
+		return errors.Wrap(err, "creating the destination file")
+	}
+	defer destFile.Close()
+
+	err = lib.MarkdownToHtml(srcFile, destFile)
+	if err != nil {
+		srcFile.Close()
+		destFile.Close()
+		return errors.Wrap(err, "converting markdown to html")
 	}
 
-	lib.MarkdownToHtml(file)
 	return nil
 }
