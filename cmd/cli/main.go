@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/pkg/errors"
+	"interview-markdown-converter/lib"
 	"os"
 )
 
@@ -16,7 +17,7 @@ func main() {
 }
 
 func run() error {
-	_ = flag.String("filename", "", "used to provide a file to convert")
+	filename := flag.String("filename", "", "used to provide a file to convert")
 	flag.Parse()
 
 	areAllRequiredFlagsSet := false
@@ -30,5 +31,11 @@ func run() error {
 		return errors.New("required parameters not passed in")
 	}
 
+	file, err := os.Open(*filename)
+	if err != nil {
+		errors.Wrap(err, "opening file")
+	}
+
+	lib.MarkdownToHtml(file)
 	return nil
 }
