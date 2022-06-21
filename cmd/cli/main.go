@@ -33,7 +33,7 @@ func run() error {
 
 	file, err := os.Open(*filename)
 	if err != nil {
-		errors.Wrap(err, "opening file")
+		return errors.Wrap(err, "opening file")
 	}
 
 	lib.MarkdownToHtml(file)
