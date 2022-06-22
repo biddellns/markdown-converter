@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestHeaders(t *testing.T) {
+func TestTags(t *testing.T) {
 	tests := []struct {
 		name           string
 		input          string
@@ -40,20 +40,26 @@ func TestHeaders(t *testing.T) {
 			input:          "###### Header6",
 			expectedOutput: "<h6>Header6</h6>",
 		},
+		{
+			name:           "A",
+			input:          `[myBlog](https://aws.nicbiddell.com/blog)`,
+			expectedOutput: `<a href="https://aws.nicbiddell.com/blog">myBlog</a>`,
+		},
 	}
 
 	for testNum, test := range tests {
-		converter := RegExpLineConverter{}
+		t.Run(test.name, func(t *testing.T) {
+			converter := RegExpLineConverter{}
 
-		output := string(converter.ConvertLine([]byte(test.input)))
-		t.Log(output)
-		if output != test.expectedOutput {
-			t.Errorf("%d:%s - incorrect output. wanted=%s, got=%s",
-				testNum, test.name, test.expectedOutput, output)
-		}
+			output := string(converter.ConvertLine([]byte(test.input)))
+			if output != test.expectedOutput {
+				t.Errorf("%d:%s - incorrect output. wanted=%s, got=%s",
+					testNum, test.name, test.expectedOutput, output)
+			}
+		})
 	}
-
 }
+
 func TestConversions(t *testing.T) {
 	tests := []struct {
 		name           string
