@@ -47,14 +47,14 @@ func TestTags(t *testing.T) {
 		},
 	}
 
-	for testNum, test := range tests {
+	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			converter := RegExpLineConverter{}
 
 			output := string(converter.ConvertLine([]byte(test.input)))
 			if output != test.expectedOutput {
-				t.Errorf("%d:%s - incorrect output. wanted=%s, got=%s",
-					testNum, test.name, test.expectedOutput, output)
+				t.Errorf("incorrect output. wanted=%s, got=%s",
+					test.expectedOutput, output)
 			}
 		})
 	}
