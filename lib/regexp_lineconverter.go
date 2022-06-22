@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"fmt"
 	"regexp"
 )
 
@@ -23,15 +22,14 @@ func (relc RegExpLineConverter) ConvertLine(input []byte) []byte {
 		return []byte{'\n'}
 	}
 
-	output := h6.ReplaceAll(input, []byte(`<h6>$2</h6>`))
-	output = h5.ReplaceAll(output, []byte(`<h5>$2</h5>`))
-	output = h4.ReplaceAll(output, []byte(`<h4>$2</h4>`))
-	output = h3.ReplaceAll(output, []byte(`<h3>$2</h3>`))
-	output = h2.ReplaceAll(output, []byte(`<h2>$2</h2>`))
-	output = h1.ReplaceAll(output, []byte(`<h1>$2</h1>`))
+	input = h6.ReplaceAll(input, []byte(`<h6>$2</h6>`))
+	input = h5.ReplaceAll(input, []byte(`<h5>$2</h5>`))
+	input = h4.ReplaceAll(input, []byte(`<h4>$2</h4>`))
+	input = h3.ReplaceAll(input, []byte(`<h3>$2</h3>`))
+	input = h2.ReplaceAll(input, []byte(`<h2>$2</h2>`))
+	input = h1.ReplaceAll(input, []byte(`<h1>$2</h1>`))
 
-	fmt.Println(string(output))
-	output = a.ReplaceAll(output, []byte(`<a href="$2">$1</a>`))
-	fmt.Println(string(output))
-	return output
+	input = a.ReplaceAll(input, []byte(`<a href="$2">$1</a>`))
+
+	return input
 }
