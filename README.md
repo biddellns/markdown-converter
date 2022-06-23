@@ -33,6 +33,7 @@ Run
 ```shell
 inFile=yourfile.md
 outFile=yourfile.html
+
 docker run --rm \
   -v "$(pwd)/path/to/$inFile:/input/$inFile" \
   -v $(pwd)/output:/output \
@@ -44,6 +45,7 @@ Pre-written example:
 ```shell
 inFile=sample1.md
 outFile=sample1out.html
+
 docker run --rm \
   -v "$(pwd)/test/sample_inputs/$inFile:/input/$inFile" \
   -v $(pwd)/output:/output \
