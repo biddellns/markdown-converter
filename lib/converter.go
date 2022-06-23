@@ -23,11 +23,6 @@ var (
 	p = regexp.MustCompile(`(.*)`)
 )
 
-func isFormattingToken(char byte) bool {
-	return char == headerToken ||
-		char == linkToken
-}
-
 func MarkdownToHtmlAndWrap(input io.Reader, output io.Writer) error {
 	return markdownToHtml(input, output, true)
 }
@@ -137,4 +132,9 @@ func markdownToHtml(input io.Reader, output io.Writer, wrapWithHtmlSkeleton bool
 	}
 
 	return nil
+}
+
+func isFormattingToken(char byte) bool {
+	return char == headerToken ||
+		char == linkToken
 }
