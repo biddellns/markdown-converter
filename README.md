@@ -1,15 +1,23 @@
 # Markdown Converter
 
+## Table of contents
+
 ---
 Convert markdown files to HTML in your terminal!
 
 Currently supports headers and anchor tags.
 
+## Quickstart
+
+Run `make build-binary`
+
+Run `./target/bin/markdown-converter -in ./test/sample_inputs/sample1.md -out tada.html`
+
 ## Running the program
 
 ---
 ### Native Binary
-`./target/bin/markdown-converter -in myMarkdownFile.md -out myMarkdownFile.html` 
+`./target/bin/markdown-converter -in <myMarkdownFile.md> -out myConvertedMarkdownFile.html` 
 
 HTML doc and body headers will surround your output by default.
 
@@ -46,6 +54,7 @@ Run `make container`
 ## Design Considerations
 
 ---
+
 There were a couple design tradeoffs I had to make:
 
 #### #1: Regex vs Compiler
@@ -81,3 +90,8 @@ This ended up working much better with our "streaming" workflow and design philo
 
 #### #4: Parsing with bytes instead of strings
 It's easier to change bytes in place and reduces any extra allocations - one of the biggest variables for Go's GC performance.
+
+## What's next?
+- Getting Docker to fully work
+- Demo with an AWS Lambda
+- Using a compiler approach to see if we can get the same outputs
