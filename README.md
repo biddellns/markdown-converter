@@ -31,11 +31,13 @@ We'll need to attach volumes to the container for the input and output files
 
 Run 
 ```shell
- docker run --rm \
-   -v absolute/path/to/markdownFile.md:/input/markdownFile.md \
-   -v absolute/path/to/output/folder:/output \
-  interview/markdown-converter -in '/input/markdownFile.md' \
-  -out /output/output.html
+inFile=yourfile.md
+outFile=yourfile.html
+docker run --rm \
+  -v "$(pwd)/path/to/$inFile:/input/$inFile" \
+  -v $(pwd)/output:/output \
+  interview/markdown-converter -in "/input/$inFile" \
+  -out "/output/$outFile"
 ```
 
 Pre-written example:
