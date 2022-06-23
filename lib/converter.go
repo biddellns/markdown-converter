@@ -8,6 +8,9 @@ import (
 	"regexp"
 )
 
+const headingToken = '#'
+const linkToken = '['
+
 var (
 	h  = regexp.MustCompile(`^(#{1,6})(\s|)(.*?)$`)
 	h1 = regexp.MustCompile(`^#(\s|)(.*?)$`)
@@ -21,6 +24,11 @@ var (
 	p = regexp.MustCompile(`(.*)`)
 )
 
+func isFormattingToken(char byte) bool {
+	return char == headingToken ||
+		char == linkToken
+}
+
 func MarkdownToHtml(input io.Reader, output io.Writer) error {
 	scanner := bufio.NewScanner(input)
 
@@ -30,7 +38,7 @@ func MarkdownToHtml(input io.Reader, output io.Writer) error {
 		line := bytes.TrimSpace(scanner.Bytes())
 		if len(line) != 0 {
 			// Currently the only non-paragraph opening are headers and anchors
-			if line[0] != '#' && line[0] != '[' {
+			if !isFormattingToken(line[0]) {
 				if !ParagraphOpen {
 					line = p.ReplaceAll(line, []byte(`<p>$1`))
 					ParagraphOpen = true
@@ -55,14 +63,11 @@ func MarkdownToHtml(input io.Reader, output io.Writer) error {
 		} else {
 			if ParagraphOpen {
 				line = []byte(`</p>`)
+				line = append(line, '\n')
 				ParagraphOpen = false
 			} else {
 				line = []byte{'\n'}
 			}
-		}
-
-		if !ParagraphOpen {
-			line = append(line, '\n')
 		}
 
 		_, err := output.Write(line)

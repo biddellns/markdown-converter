@@ -76,6 +76,7 @@ func TestSampleDocs(t *testing.T) {
 		{
 			name: "First, simple sample",
 			input: `# Sample Document
+
 Hello!
 
 This is sample markdown for the [Mailchimp](https://www.mailchimp.com) homework assignment.`,
@@ -89,6 +90,7 @@ This is sample markdown for the [Mailchimp](https://www.mailchimp.com) homework 
 		{
 			name: "Sample 2, nested, inline link",
 			input: `# Header one
+
 Hello there
 
 How are you?
@@ -105,11 +107,9 @@ This is a paragraph [with an inline link](http://google.com). Neat, eh?
 
 <p>How are you?
 What's going on?</p>
-
 <h2>Another Header</h2>
 
 <p>This is a paragraph <a href="http://google.com">with an inline link</a>. Neat, eh?</p>
-
 <h2>This is a header <a href="http://yahoo.com">with a link</a></h2>`,
 			expectedErr: false,
 		},
