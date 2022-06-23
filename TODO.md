@@ -1,3 +1,0 @@
-- Write README
-- Potentially wrap converted html?
-- Wrap everything in Docker file

@@ -1,3 +1,13 @@
+REGISTRY ?= interview
+IMAGE ?= markdown-converter
+TAG ?= latest
+
+all: container
+
+container:
+	docker build -t $(REGISTRY)/$(IMAGE):$(TAG) .
+
+
 .PHONY: build-binary
 build-binary:
 	go build -o ./target/bin/markdown-converter ./cmd/cli/...
