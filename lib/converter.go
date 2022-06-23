@@ -3,29 +3,28 @@ package lib
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"github.com/pkg/errors"
 	"io"
 	"regexp"
 )
 
-const headingToken = '#'
-const linkToken = '['
-
 var (
-	h  = regexp.MustCompile(`^(#{1,6})(\s|)(.*?)$`)
-	h1 = regexp.MustCompile(`^#(\s|)(.*?)$`)
-	h2 = regexp.MustCompile(`^##(\s|)(.*?)$`)
-	h3 = regexp.MustCompile(`^###(\s|)(.*?)$`)
-	h4 = regexp.MustCompile(`^####(\s|)(.*?)$`)
-	h5 = regexp.MustCompile(`^#####(\s|)(.*?)$`)
-	h6 = regexp.MustCompile(`^######(\s|)(.*?)$`)
+
+	// #
+	headerToken byte = 35
+
+	// [
+	linkToken byte = 91
+
+	header = regexp.MustCompile(`^#{1,6}(\s|)(.*?)$`)
 
 	a = regexp.MustCompile(`\[(.*?)\]\((.*?)\)`)
 	p = regexp.MustCompile(`(.*)`)
 )
 
 func isFormattingToken(char byte) bool {
-	return char == headingToken ||
+	return char == headerToken ||
 		char == linkToken
 }
 
@@ -49,15 +48,18 @@ func MarkdownToHtml(input io.Reader, output io.Writer) error {
 				if err != nil {
 					return errors.Wrap(err, "writing output")
 				}
+			} else if line[0] == headerToken {
+				headerSize := 1
+				for _, t := range line[1:6] {
+					if t != headerToken {
+						break
+					}
 
-			} else {
-				line = h6.ReplaceAll(line, []byte(`<h6>$2</h6>`))
-				line = h5.ReplaceAll(line, []byte(`<h5>$2</h5>`))
-				line = h4.ReplaceAll(line, []byte(`<h4>$2</h4>`))
-				line = h3.ReplaceAll(line, []byte(`<h3>$2</h3>`))
-				line = h2.ReplaceAll(line, []byte(`<h2>$2</h2>`))
-				line = h1.ReplaceAll(line, []byte(`<h1>$2</h1>`))
+					headerSize += 1
+				}
+				headerSizeStr := fmt.Sprint(headerSize)
 
+				line = header.ReplaceAll(line, []byte(`<h`+headerSizeStr+`>`+`$2`+`</h`+headerSizeStr+`>`))
 			}
 			line = a.ReplaceAll(line, []byte(`<a href="$2">$1</a>`))
 		} else {
