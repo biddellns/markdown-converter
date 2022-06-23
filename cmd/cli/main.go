@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/biddellns/markdown-converter/lib"
 	"github.com/pkg/errors"
-	"interview-markdown-converter/lib"
 	"os"
 )
 

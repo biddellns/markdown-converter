@@ -1,4 +1,4 @@
-module interview-markdown-converter
+module github.com/biddellns/markdown-converter
 
 go 1.18
 
