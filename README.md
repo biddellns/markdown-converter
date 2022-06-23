@@ -40,11 +40,13 @@ Run
 
 Pre-written example:
 ```shell
+inFile=sample1.md
+outFile=sample1out.html
 docker run --rm \
-  -v $(pwd)/test/sample_inputs/sample1.md:/input/sample1.md \
+  -v "$(pwd)/test/sample_inputs/$inFile:/input/$inFile" \
   -v $(pwd)/output:/output \
-  interview/markdown-converter -in '/input/sample1.md' \
-  -out /output/output.html
+  interview/markdown-converter -in "/input/$inFile" \
+  -out "/output/$outFile"
 ```
 
 ## Building the program
