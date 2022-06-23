@@ -17,8 +17,9 @@ func main() {
 }
 
 func run() error {
-	sourceFilename := flag.String("in", "", "provide a file to convert")
-	destinationFilename := flag.String("out", "", "save conversion to a file")
+	sourceFilenameFlag := flag.String("in", "", "provide a file to convert")
+	destinationFilenameFlag := flag.String("out", "", "save conversion to a file")
+	// noWrapFlag := flag.Bool("noWrapFlag", false, "don't wrap converted html in doc/body tags")
 	helpFlag := flag.Bool("h", false, "print help")
 	flag.Parse()
 
@@ -44,13 +45,13 @@ func run() error {
 		}
 	}
 
-	srcFile, err := os.Open(*sourceFilename)
+	srcFile, err := os.Open(*sourceFilenameFlag)
 	if err != nil {
 		return errors.Wrap(err, "opening source file")
 	}
 	defer srcFile.Close()
 
-	destFile, err := os.Create(*destinationFilename)
+	destFile, err := os.Create(*destinationFilenameFlag)
 	if err != nil {
 		srcFile.Close()
 		return errors.Wrap(err, "creating the destination file")
