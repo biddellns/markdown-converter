@@ -57,7 +57,7 @@ func run() error {
 	}
 	defer destFile.Close()
 
-	err = lib.MarkdownToHtml(srcFile, destFile)
+	err = lib.MarkdownToHtml(srcFile, destFile, lib.RegExpLineConverter{})
 	if err != nil {
 		srcFile.Close()
 		destFile.Close()

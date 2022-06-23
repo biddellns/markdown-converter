@@ -45,6 +45,11 @@ func TestTags(t *testing.T) {
 			input:          "[myBlog](https://aws.nicbiddell.com/blog)",
 			expectedOutput: `<a href="https://aws.nicbiddell.com/blog">myBlog</a>`,
 		},
+		{
+			name:           "P",
+			input:          "something something something",
+			expectedOutput: "<p>something something something</p>",
+		},
 	}
 
 	for _, test := range tests {
