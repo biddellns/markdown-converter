@@ -9,7 +9,17 @@ import (
 	"regexp"
 )
 
-var (
+const (
+	beginningHtmlBoilerplate = `<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<body>
+`
+
+	endingHtmlBoilerplate = `
+</body>
+</html>`
 
 	// #
 	headerToken byte = 35
@@ -17,6 +27,11 @@ var (
 	// [
 	linkToken byte = 91
 
+	// '\n'
+	newLine byte = 10
+)
+
+var (
 	header = regexp.MustCompile(`^#{1,6}(\s|)(.*?)$`)
 
 	a = regexp.MustCompile(`\[(.*?)\]\((.*?)\)`)
@@ -49,7 +64,7 @@ func convertInput(input io.Reader, output io.Writer) error {
 				}
 
 				// If the paragraph is open, ensure that we have a new line for the next text block.
-				_, err := output.Write([]byte{'\n'})
+				_, err := output.Write([]byte{newLine})
 				if err != nil {
 					return errors.Wrap(err, "writing output")
 				}
@@ -60,10 +75,10 @@ func convertInput(input io.Reader, output io.Writer) error {
 		} else {
 			if ParagraphOpen {
 				line = []byte(`</p>`)
-				line = append(line, '\n')
+				line = append(line, newLine)
 				ParagraphOpen = false
 			} else {
-				line = []byte{'\n'}
+				line = []byte{newLine}
 			}
 		}
 
@@ -104,15 +119,9 @@ func convertHeader(line []byte) []byte {
 // In most cases, a template should suffice.
 func markdownToHtml(input io.Reader, output io.Writer, wrapWithHtmlSkeleton bool) error {
 	if wrapWithHtmlSkeleton {
-		_, err := output.Write([]byte(
-			`<!DOCTYPE html>
-<html lang="en">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<body>
-`))
+		_, err := output.Write([]byte(beginningHtmlBoilerplate))
 		if err != nil {
-			return errors.Wrap(err, "writing output")
+			return errors.Wrap(err, "writing beginning html boilerplate")
 		}
 	}
 
@@ -122,12 +131,9 @@ func markdownToHtml(input io.Reader, output io.Writer, wrapWithHtmlSkeleton bool
 	}
 
 	if wrapWithHtmlSkeleton {
-		_, err := output.Write([]byte(
-			`
-</body>
-</html>`))
+		_, err := output.Write([]byte(endingHtmlBoilerplate))
 		if err != nil {
-			return errors.Wrap(err, "writing output")
+			return errors.Wrap(err, "writing ending html boilerplate")
 		}
 	}
 
