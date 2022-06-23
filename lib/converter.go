@@ -114,7 +114,8 @@ func markdownToHtml(input io.Reader, output io.Writer, wrapWithHtmlSkeleton bool
 <html lang="en">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<body>`))
+<body>
+`))
 		if err != nil {
 			return errors.Wrap(err, "writing output")
 		}

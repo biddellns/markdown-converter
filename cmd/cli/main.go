@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"github.com/pkg/errors"
@@ -20,7 +19,7 @@ func main() {
 func run() error {
 	sourceFilenameFlag := flag.String("in", "", "provide a file to convert")
 	destinationFilenameFlag := flag.String("out", "", "save conversion to a file")
-	noWrapFlag := flag.Bool("noWrapFlag", false, "don't wrap converted html in doc/body tags")
+	noWrapFlag := flag.Bool("no-wrap", false, "don't wrap converted html in doc/body tags")
 	helpFlag := flag.Bool("h", false, "print help")
 	flag.Parse()
 
@@ -60,7 +59,7 @@ func run() error {
 	defer destFile.Close()
 
 	if *noWrapFlag {
-		err = lib.MarkdownToHtmlNoWrap(srcFile, bufio.NewWriter(destFile))
+		err = lib.MarkdownToHtmlNoWrap(srcFile, destFile)
 		if err != nil {
 			srcFile.Close()
 			destFile.Close()
@@ -70,7 +69,7 @@ func run() error {
 		return nil
 	}
 
-	err = lib.MarkdownToHtmlAndWrap(srcFile, bufio.NewWriter(destFile))
+	err = lib.MarkdownToHtmlAndWrap(srcFile, destFile)
 	if err != nil {
 		srcFile.Close()
 		destFile.Close()
