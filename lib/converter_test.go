@@ -56,7 +56,7 @@ func TestTags(t *testing.T) {
 
 	for testNum, test := range tests {
 		var b bytes.Buffer
-		MarkdownToHtml(strings.NewReader(test.input), &b)
+		MarkdownToHtmlNoWrap(strings.NewReader(test.input), &b)
 
 		actual := strings.TrimSpace(b.String())
 		if actual != test.expectedOutput {
@@ -117,7 +117,7 @@ What's going on?</p>
 
 	for testNum, test := range tests {
 		var b bytes.Buffer
-		err := MarkdownToHtml(strings.NewReader(test.input), &b)
+		err := MarkdownToHtmlNoWrap(strings.NewReader(test.input), &b)
 
 		if (test.expectedErr && err == nil) || (!test.expectedErr && err != nil) {
 			t.Errorf("expected err? %t. got=%v", test.expectedErr, err)
@@ -127,5 +127,29 @@ What's going on?</p>
 			t.Errorf("%d:%s - incorrect output. wanted=%s, got=%s",
 				testNum, test.name, test.expectedOutput, b.String())
 		}
+	}
+}
+
+func TestWrapping(t *testing.T) {
+
+	input := "hello world"
+	expectedOutput := `<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<body>
+<p>hello world</p>
+</body>
+</html>`
+	var b bytes.Buffer
+	err := MarkdownToHtmlAndWrap(strings.NewReader(input), &b)
+
+	if err != nil {
+		t.Errorf("failed to wrap and convert input")
+	}
+
+	if b.String() != expectedOutput {
+		t.Errorf("incorrect output. wanted=%s, got=%s",
+			expectedOutput, b.String())
 	}
 }

@@ -28,7 +28,15 @@ func isFormattingToken(char byte) bool {
 		char == linkToken
 }
 
-func MarkdownToHtml(input io.Reader, output io.Writer) error {
+func MarkdownToHtmlAndWrap(input io.Reader, output io.Writer) error {
+	return markdownToHtml(input, output, true)
+}
+
+func MarkdownToHtmlNoWrap(input io.Reader, output io.Writer) error {
+	return markdownToHtml(input, output, false)
+}
+
+func convertInput(input io.Reader, output io.Writer) error {
 	scanner := bufio.NewScanner(input)
 
 	ParagraphOpen := false
@@ -81,6 +89,37 @@ func MarkdownToHtml(input io.Reader, output io.Writer) error {
 	// If last item is a paragraph, ensure it gets closed
 	if ParagraphOpen {
 		_, err := output.Write([]byte(`</p>`))
+		if err != nil {
+			return errors.Wrap(err, "writing output")
+		}
+	}
+
+	return nil
+}
+
+func markdownToHtml(input io.Reader, output io.Writer, wrapWithHtmlSkeleton bool) error {
+	if wrapWithHtmlSkeleton {
+		_, err := output.Write([]byte(
+			`<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<body>`))
+		if err != nil {
+			return errors.Wrap(err, "writing output")
+		}
+	}
+
+	err := convertInput(input, output)
+	if err != nil {
+		return errors.Wrap(err, "converting input to html")
+	}
+
+	if wrapWithHtmlSkeleton {
+		_, err := output.Write([]byte(
+			`
+</body>
+</html>`))
 		if err != nil {
 			return errors.Wrap(err, "writing output")
 		}
