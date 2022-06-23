@@ -5,7 +5,7 @@ Convert markdown files to HTML in your terminal!
 Currently supports headers and anchor tags.
 
 ## Running the program
-`./markdown-converter -in myMarkdownFile.md -out myMarkdownFile.html` 
+`./target/bin/markdown-converter -in myMarkdownFile.md -out myMarkdownFile.html` 
 
 HTML doc and body headers will surround your output by default.
 
