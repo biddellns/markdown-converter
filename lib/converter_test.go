@@ -58,9 +58,10 @@ func TestTags(t *testing.T) {
 		var b bytes.Buffer
 		MarkdownToHtml(strings.NewReader(test.input), &b)
 
-		if b.String() != test.expectedOutput {
+		actual := strings.TrimSpace(b.String())
+		if actual != test.expectedOutput {
 			t.Errorf("%d:%s - incorrect output. wanted=%s, got=%s",
-				testNum, test.name, test.expectedOutput, b.String())
+				testNum, test.name, test.expectedOutput, actual)
 		}
 	}
 }
@@ -78,19 +79,16 @@ func TestSampleDocs(t *testing.T) {
 Hello!
 
 This is sample markdown for the [Mailchimp](https://www.mailchimp.com) homework assignment.`,
-			expectedOutput: `
-<h1>Sample Document</h1>
+			expectedOutput: `<h1>Sample Document</h1>
 
-<p>Hello</p>
+<p>Hello!</p>
 
-<p>This is sample markdown for the <a href="https://www.mailchimp.com">Mailchimp</a> homework assignment</p>`,
+<p>This is sample markdown for the <a href="https://www.mailchimp.com">Mailchimp</a> homework assignment.</p>`,
 			expectedErr: false,
 		},
 		{
 			name: "Sample 2, nested, inline link",
-			input: `
-# Header one
-
+			input: `# Header one
 Hello there
 
 How are you?
@@ -101,8 +99,7 @@ What's going on?
 This is a paragraph [with an inline link](http://google.com). Neat, eh?
 
 ## This is a header [with a link](http://yahoo.com)`,
-			expectedOutput: `
-<h1>Header one</h1>
+			expectedOutput: `<h1>Header one</h1>
 
 <p>Hello there</p>
 
