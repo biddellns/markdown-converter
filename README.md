@@ -34,16 +34,16 @@ Run
  docker run --rm \
    -v absolute/path/to/markdownFile.md:/input/markdownFile.md \
    -v absolute/path/to/output/folder:/output \
-  interview/markdown-converter -in '/input/markdownFile.md' 
-  -out output/output.html
+  interview/markdown-converter -in '/input/markdownFile.md' \
+  -out /output/output.html
 ```
 
 Pre-written example:
 ```shell
-docker run --rm \                                                                                                                                                                              *[main]
-   -v $(pwd)/test/sample_inputs/sample1.md:/input/sample1.md \
-   -v $(pwd)/output:/output \
-  interview/markdown-converter -in /input/sample1.md \
+docker run --rm \
+  -v $(pwd)/test/sample_inputs/sample1.md:/input/sample1.md \
+  -v $(pwd)/output:/output \
+  interview/markdown-converter -in '/input/sample1.md' \
   -out /output/output.html
 ```
 
