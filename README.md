@@ -53,6 +53,8 @@ docker run --rm \
   -out "/output/$outFile"
 ```
 
+After this, you should see the converted file in the `output` directory in your current working directory.
+
 ## Building the program
 
 ---
