@@ -72,4 +72,12 @@ The beauty of this setup is:
 - Easily handles a variety of use-cases -> E.g., CLI, Server application, Lambda
 - Interoperable with many libraries -> Doesn't constrain library consumers
 
-#### #3: 
+#### #3: Manually writing out base HTML vs Using [Templates](https://pkg.go.dev/text/template)
+When we generate html, we can "wrap" it in boilerplate HTML. 
+
+We used string constants and wrote them with our writer. 
+
+This ended up working much better with our "streaming" workflow and design philosophy. Had we used a template, we'd have had to load the entire output into memory.
+
+#### #4: Parsing with bytes instead of strings
+It's easier to change bytes in place and reduces any extra allocations - one of the biggest variables for Go's GC performance.
