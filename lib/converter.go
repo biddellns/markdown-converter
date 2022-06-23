@@ -43,9 +43,11 @@ func convertInput(input io.Reader, output io.Writer) error {
 
 	for scanner.Scan() {
 		line := bytes.TrimSpace(scanner.Bytes())
+
 		if len(line) != 0 {
-			// Currently the only non-paragraph opening are headers and anchors
-			if !isFormattingToken(line[0]) {
+			firstChar := line[0]
+			// If it isn't a formatting token, it's plaintext, ready for a <p> tag
+			if !isFormattingToken(firstChar) {
 				if !ParagraphOpen {
 					line = p.ReplaceAll(line, []byte(`<p>$1`))
 					ParagraphOpen = true
@@ -56,18 +58,8 @@ func convertInput(input io.Reader, output io.Writer) error {
 				if err != nil {
 					return errors.Wrap(err, "writing output")
 				}
-			} else if line[0] == headerToken {
-				headerSize := 1
-				for _, t := range line[1:6] {
-					if t != headerToken {
-						break
-					}
-
-					headerSize += 1
-				}
-				headerSizeStr := fmt.Sprint(headerSize)
-
-				line = header.ReplaceAll(line, []byte(`<h`+headerSizeStr+`>`+`$2`+`</h`+headerSizeStr+`>`))
+			} else if firstChar == headerToken {
+				line = convertHeader(line)
 			}
 			line = a.ReplaceAll(line, []byte(`<a href="$2">$1</a>`))
 		} else {
@@ -97,6 +89,24 @@ func convertInput(input io.Reader, output io.Writer) error {
 	return nil
 }
 
+func convertHeader(line []byte) []byte {
+	headerSize := 1
+	for _, t := range line[1:6] {
+		if t != headerToken {
+			break
+		}
+
+		headerSize += 1
+	}
+	headerSizeStr := fmt.Sprint(headerSize)
+
+	return header.ReplaceAll(line, []byte(`<h`+headerSizeStr+`>`+`$2`+`</h`+headerSizeStr+`>`))
+}
+
+// This wrapping logic is probably easier and cleaner if we used a template.
+// The reason we went with a manual write is to handle a "large" or streaming input
+//
+// In most cases, a template should suffice.
 func markdownToHtml(input io.Reader, output io.Writer, wrapWithHtmlSkeleton bool) error {
 	if wrapWithHtmlSkeleton {
 		_, err := output.Write([]byte(
