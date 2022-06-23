@@ -1,0 +1,4 @@
+- Write README
+- Write license
+- Potentially wrap converted html?
+- Wrap everything in Docker file

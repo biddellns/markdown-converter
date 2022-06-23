@@ -3,7 +3,6 @@ package lib
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"github.com/pkg/errors"
 	"io"
 	"regexp"
@@ -29,9 +28,8 @@ func MarkdownToHtml(input io.Reader, output io.Writer) error {
 
 	for scanner.Scan() {
 		line := bytes.TrimSpace(scanner.Bytes())
-
 		if len(line) != 0 {
-			// Currently the only non-paragraph opening are headers
+			// Currently the only non-paragraph opening are headers and anchors
 			if line[0] != '#' && line[0] != '[' {
 				if !ParagraphOpen {
 					line = p.ReplaceAll(line, []byte(`<p>$1`))
@@ -45,7 +43,7 @@ func MarkdownToHtml(input io.Reader, output io.Writer) error {
 				}
 
 			} else {
-				line = h6.ReplaceAll(line, []byte(`<h6>`+`$2`+`</h6>`))
+				line = h6.ReplaceAll(line, []byte(`<h6>$2</h6>`))
 				line = h5.ReplaceAll(line, []byte(`<h5>$2</h5>`))
 				line = h4.ReplaceAll(line, []byte(`<h4>$2</h4>`))
 				line = h3.ReplaceAll(line, []byte(`<h3>$2</h3>`))
@@ -54,19 +52,17 @@ func MarkdownToHtml(input io.Reader, output io.Writer) error {
 
 			}
 			line = a.ReplaceAll(line, []byte(`<a href="$2">$1</a>`))
-			if !ParagraphOpen {
-				line = append(line, '\n')
-			}
-
 		} else {
 			if ParagraphOpen {
 				line = []byte(`</p>`)
-				line = append(line, '\n')
-				fmt.Printf("lineStr: %v", line)
 				ParagraphOpen = false
 			} else {
 				line = []byte{'\n'}
 			}
+		}
+
+		if !ParagraphOpen {
+			line = append(line, '\n')
 		}
 
 		_, err := output.Write(line)
@@ -75,6 +71,7 @@ func MarkdownToHtml(input io.Reader, output io.Writer) error {
 		}
 	}
 
+	// If last item is a paragraph, ensure it gets closed
 	if ParagraphOpen {
 		_, err := output.Write([]byte(`</p>`))
 		if err != nil {
@@ -82,12 +79,5 @@ func MarkdownToHtml(input io.Reader, output io.Writer) error {
 		}
 	}
 
-	mything := bufio.NewReader(input)
-	mything.Peek()
-	mything.WriteString()
 	return nil
 }
-
-
-
-add newline at the end of every line EXCEPT for paragraphs
