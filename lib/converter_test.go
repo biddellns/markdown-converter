@@ -6,7 +6,66 @@ import (
 	"testing"
 )
 
-func TestBase(t *testing.T) {
+func TestTags(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          string
+		expectedOutput string
+	}{
+		{
+			name:           "H1",
+			input:          "# Header1",
+			expectedOutput: "<h1>Header1</h1>",
+		},
+		{
+			name:           "H2",
+			input:          "## Header2",
+			expectedOutput: "<h2>Header2</h2>",
+		},
+		{
+			name:           "H3",
+			input:          "### Header3",
+			expectedOutput: "<h3>Header3</h3>",
+		},
+		{
+			name:           "H4",
+			input:          "#### Header4",
+			expectedOutput: "<h4>Header4</h4>",
+		},
+		{
+			name:           "H5",
+			input:          "##### Header5",
+			expectedOutput: "<h5>Header5</h5>",
+		},
+		{
+			name:           "H6",
+			input:          "###### Header6",
+			expectedOutput: "<h6>Header6</h6>",
+		},
+		{
+			name:           "A",
+			input:          "[myBlog](https://aws.nicbiddell.com/blog)",
+			expectedOutput: `<a href="https://aws.nicbiddell.com/blog">myBlog</a>`,
+		},
+		{
+			name:           "P",
+			input:          "something something something",
+			expectedOutput: "<p>something something something</p>",
+		},
+	}
+
+	for testNum, test := range tests {
+		var b bytes.Buffer
+		MarkdownToHtml(strings.NewReader(test.input), &b)
+
+		if b.String() != test.expectedOutput {
+			t.Errorf("%d:%s - incorrect output. wanted=%s, got=%s",
+				testNum, test.name, test.expectedOutput, b.String())
+		}
+	}
+}
+
+func TestSampleDocs(t *testing.T) {
 	tests := []struct {
 		name           string
 		input          string
@@ -61,7 +120,7 @@ What's going on?</p>
 
 	for testNum, test := range tests {
 		var b bytes.Buffer
-		err := MarkdownToHtml(strings.NewReader(test.input), &b, RegExpLineConverter{})
+		err := MarkdownToHtml(strings.NewReader(test.input), &b)
 
 		if (test.expectedErr && err == nil) || (!test.expectedErr && err != nil) {
 			t.Errorf("expected err? %t. got=%v", test.expectedErr, err)
