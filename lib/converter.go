@@ -118,23 +118,28 @@ func convertHeader(line []byte) []byte {
 //
 // In most cases, a template should suffice.
 func markdownToHtml(input io.Reader, output io.Writer, wrapWithHtmlSkeleton bool) error {
-	if wrapWithHtmlSkeleton {
-		_, err := output.Write([]byte(beginningHtmlBoilerplate))
+	if !wrapWithHtmlSkeleton {
+		err := convertInput(input, output)
 		if err != nil {
-			return errors.Wrap(err, "writing beginning html boilerplate")
+			return errors.Wrap(err, "converting input to html")
 		}
+
+		return nil
 	}
 
-	err := convertInput(input, output)
+	_, err := output.Write([]byte(beginningHtmlBoilerplate))
+	if err != nil {
+		return errors.Wrap(err, "writing beginning html boilerplate")
+	}
+
+	err = convertInput(input, output)
 	if err != nil {
 		return errors.Wrap(err, "converting input to html")
 	}
 
-	if wrapWithHtmlSkeleton {
-		_, err := output.Write([]byte(endingHtmlBoilerplate))
-		if err != nil {
-			return errors.Wrap(err, "writing ending html boilerplate")
-		}
+	_, err = output.Write([]byte(endingHtmlBoilerplate))
+	if err != nil {
+		return errors.Wrap(err, "writing ending html boilerplate")
 	}
 
 	return nil
