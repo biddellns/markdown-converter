@@ -29,16 +29,23 @@ To use docker at the moment is tricky.
 
 We'll need to attach volumes to the container for the input and output files
 
-Run
+Run 
 ```shell
  docker run --rm \
-   -v $(pwd)/test/sample_inputs/sample1.md:input/sample1.md \
-   -v $(pwd)/output:/output \
-  interview/markdown-converter -in '/input/sample1.md' 
+   -v absolute/path/to/markdownFile.md:/input/markdownFile.md \
+   -v absolute/path/to/output/folder:/output \
+  interview/markdown-converter -in '/input/markdownFile.md' 
   -out output/output.html
 ```
 
-**Note: At time of writing hadn't fully sorted container volume issue.**
+Pre-written example:
+```shell
+docker run --rm \                                                                                                                                                                              *[main]
+   -v $(pwd)/test/sample_inputs/sample1.md:/input/sample1.md \
+   -v $(pwd)/output:/output \
+  interview/markdown-converter -in /input/sample1.md \
+  -out /output/output.html
+```
 
 ## Building the program
 
@@ -92,6 +99,6 @@ This ended up working much better with our "streaming" workflow and design philo
 It's easier to change bytes in place and reduces any extra allocations - one of the biggest variables for Go's GC performance.
 
 ## What's next?
-- Getting Docker to fully work
+- Accepting stdin and stdout for further flexibility
 - Demo with an AWS Lambda
 - Using a compiler approach to see if we can get the same outputs
