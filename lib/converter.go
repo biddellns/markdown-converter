@@ -86,33 +86,7 @@ func convertInput(input io.Reader, output io.Writer) error {
 	for scanner.Scan() {
 		line := bytes.TrimSpace(scanner.Bytes())
 
-		if len(line) != 0 {
-			firstChar := line[0]
-			// If it isn't a formatting token, it's plaintext, ready for a <p> tag
-			if !startsWithFormattedText(line) {
-				if !isParagraphOpen {
-					line = p.ReplaceAll(line, []byte(`<p>$1`))
-					isParagraphOpen = true
-				}
-
-				// If the paragraph is open, ensure that we have a new line for the next text block.
-				_, err := output.Write([]byte{newLine})
-				if err != nil {
-					return errors.Wrap(err, "writing output")
-				}
-			} else if firstChar == headerToken {
-				line = convertHeader(line)
-			}
-			line = a.ReplaceAll(line, []byte(`<a href="$2">$1</a>`))
-		} else {
-			if isParagraphOpen {
-				line = []byte(`</p>`)
-				line = append(line, newLine)
-				isParagraphOpen = false
-			} else {
-				line = []byte{newLine}
-			}
-		}
+		line, isParagraphOpen = convertLine(line, isParagraphOpen)
 
 		_, err := output.Write(line)
 		if err != nil {
