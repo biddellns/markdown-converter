@@ -51,6 +51,19 @@ func run() error {
 	}
 	defer srcFile.Close()
 
+	srcStat, err := srcFile.Stat()
+	if err != nil {
+		return errors.Wrap(err, "getting srcFile stat")
+	}
+
+	if srcStat.IsDir() {
+		return errors.New("source input cannot be a directory")
+	}
+
+	if srcStat.Size() == 0 {
+		return errors.New("source file is empty")
+	}
+
 	destFile, err := os.Create(*destinationFilenameFlag)
 	if err != nil {
 		srcFile.Close()
