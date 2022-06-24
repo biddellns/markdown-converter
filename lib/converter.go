@@ -105,13 +105,14 @@ func convertInput(input io.Reader, output io.Writer) error {
 
 func convertLine(line []byte, isParagraphOpen bool) ([]byte, bool) {
 	if len(line) == 0 {
-		if isParagraphOpen {
-			line = []byte(`</p>`)
-			line = append(line, newLine)
-			return line, false
-		} else {
+		if !isParagraphOpen {
 			return []byte{newLine}, isParagraphOpen
 		}
+
+		line = []byte(`</p>`)
+		line = append(line, newLine)
+		return line, false
+
 	}
 
 	if startsWithFormattedText(line) {
@@ -122,7 +123,6 @@ func convertLine(line []byte, isParagraphOpen bool) ([]byte, bool) {
 			line = p.ReplaceAll(line, []byte(`<p>$1`))
 			isParagraphOpen = true
 		} else {
-
 			// If the paragraph is open, ensure that we have a new line for the next text block.
 			line = append([]byte{newLine}, line...)
 		}
