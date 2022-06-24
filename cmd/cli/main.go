@@ -63,6 +63,7 @@ func run() error {
 	}
 
 	if srcStat.Size() == 0 {
+		srcFile.Close()
 		return errors.New("source file is empty")
 	}
 
