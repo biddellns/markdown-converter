@@ -32,7 +32,7 @@ const (
 )
 
 var (
-	header = regexp.MustCompile(`^#{1,6}(\s|)(.*?)$`)
+	header = regexp.MustCompile(`^#{1,6}\s+(.*?)$`)
 
 	a = regexp.MustCompile(`\[(.*?)\]\((.*?)\)`)
 	p = regexp.MustCompile(`(.*)`)
@@ -81,7 +81,7 @@ func markdownToHtml(input io.Reader, output io.Writer, wrapWithHtmlSkeleton bool
 func convertInput(input io.Reader, output io.Writer) error {
 	scanner := bufio.NewScanner(input)
 
-	ParagraphOpen := false
+	paragraphOpen := false
 
 	for scanner.Scan() {
 		line := bytes.TrimSpace(scanner.Bytes())
@@ -89,10 +89,10 @@ func convertInput(input io.Reader, output io.Writer) error {
 		if len(line) != 0 {
 			firstChar := line[0]
 			// If it isn't a formatting token, it's plaintext, ready for a <p> tag
-			if !isFormattingToken(firstChar) {
-				if !ParagraphOpen {
+			if !isFormattedText(line) {
+				if !paragraphOpen {
 					line = p.ReplaceAll(line, []byte(`<p>$1`))
-					ParagraphOpen = true
+					paragraphOpen = true
 				}
 
 				// If the paragraph is open, ensure that we have a new line for the next text block.
@@ -105,10 +105,10 @@ func convertInput(input io.Reader, output io.Writer) error {
 			}
 			line = a.ReplaceAll(line, []byte(`<a href="$2">$1</a>`))
 		} else {
-			if ParagraphOpen {
+			if paragraphOpen {
 				line = []byte(`</p>`)
 				line = append(line, newLine)
-				ParagraphOpen = false
+				paragraphOpen = false
 			} else {
 				line = []byte{newLine}
 			}
@@ -121,7 +121,7 @@ func convertInput(input io.Reader, output io.Writer) error {
 	}
 
 	// If last item is a paragraph, ensure it gets closed
-	if ParagraphOpen {
+	if paragraphOpen {
 		_, err := output.Write([]byte(`</p>`))
 		if err != nil {
 			return errors.Wrap(err, "writing output")
@@ -142,10 +142,13 @@ func convertHeader(line []byte) []byte {
 	}
 	headerSizeStr := fmt.Sprint(headerSize)
 
-	return header.ReplaceAll(line, []byte(`<h`+headerSizeStr+`>`+`$2`+`</h`+headerSizeStr+`>`))
+	return header.ReplaceAll(line, []byte(`<h`+headerSizeStr+`>`+`$1`+`</h`+headerSizeStr+`>`))
 }
 
-func isFormattingToken(char byte) bool {
-	return char == headerToken ||
-		char == linkToken
+// Used to determine if the content should be surrounded in <p> tags.
+// According to the spec,
+// 		A line of `[Link text](https://www.example.com)`
+//		should be `<a href="https://www.example.com">Link text</a>`
+func isFormattedText(line []byte) bool {
+	return line[0] == linkToken || header.Match(line)
 }

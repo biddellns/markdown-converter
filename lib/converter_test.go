@@ -43,6 +43,11 @@ func TestTags(t *testing.T) {
 			expectedOutput: "<h6>Header6</h6>",
 		},
 		{
+			name:           "Header must have space between pound sign and content",
+			input:          "#content",
+			expectedOutput: "<p>#content</p>",
+		},
+		{
 			name:           "A",
 			input:          "[myBlog](https://aws.nicbiddell.com/blog)",
 			expectedOutput: `<a href="https://aws.nicbiddell.com/blog">myBlog</a>`,
