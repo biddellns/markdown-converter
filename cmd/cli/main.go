@@ -53,10 +53,12 @@ func run() error {
 
 	srcStat, err := srcFile.Stat()
 	if err != nil {
+		srcFile.Close()
 		return errors.Wrap(err, "getting srcFile stat")
 	}
 
 	if srcStat.IsDir() {
+		srcFile.Close()
 		return errors.New("source input cannot be a directory")
 	}
 
