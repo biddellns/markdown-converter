@@ -48,8 +48,6 @@ func MarkdownToHtmlNoWrap(input io.Reader, output io.Writer) error {
 
 // This wrapping logic is probably easier and cleaner if we used a template.
 // The reason we went with a manual write is to handle a "large" or streaming input
-//
-// In most cases, a template should suffice.
 func markdownToHtml(input io.Reader, output io.Writer, wrapWithHtmlSkeleton bool) error {
 	if !wrapWithHtmlSkeleton {
 		err := convertInput(input, output)
