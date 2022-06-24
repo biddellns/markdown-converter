@@ -86,9 +86,7 @@ Hello!
 
 This is sample markdown for the [Mailchimp](https://www.mailchimp.com) homework assignment.`,
 			expectedOutput: `<h1>Sample Document</h1>
-
 <p>Hello!</p>
-
 <p>This is sample markdown for the <a href="https://www.mailchimp.com">Mailchimp</a> homework assignment.</p>`,
 			expectedErr: false,
 		},
@@ -107,13 +105,10 @@ This is a paragraph [with an inline link](http://google.com). Neat, eh?
 
 ## This is a header [with a link](http://yahoo.com)`,
 			expectedOutput: `<h1>Header one</h1>
-
 <p>Hello there</p>
-
 <p>How are you?
 What's going on?</p>
 <h2>Another Header</h2>
-
 <p>This is a paragraph <a href="http://google.com">with an inline link</a>. Neat, eh?</p>
 <h2>This is a header <a href="http://yahoo.com">with a link</a></h2>`,
 			expectedErr: false,
@@ -143,7 +138,6 @@ func TestWrapping(t *testing.T) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <body>
-
 <p>hello world</p>
 </body>
 </html>`

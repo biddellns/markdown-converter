@@ -119,13 +119,15 @@ func convertLine(line []byte, isParagraphOpen bool) ([]byte, bool) {
 	if startsWithFormattedText(line) {
 		line = convertHeader(line)
 	} else {
+
 		if !isParagraphOpen {
 			line = p.ReplaceAll(line, []byte(`<p>$1`))
-			return line, true
-		}
+			isParagraphOpen = true
+		} else {
 
-		// If the paragraph is open, ensure that we have a new line for the next text block.
-		line = append([]byte{'\n'}, line...)
+			// If the paragraph is open, ensure that we have a new line for the next text block.
+			line = append([]byte{newLine}, line...)
+		}
 	}
 
 	line = a.ReplaceAll(line, []byte(`<a href="$2">$1</a>`))
