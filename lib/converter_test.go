@@ -57,6 +57,13 @@ func TestTags(t *testing.T) {
 			input:          "something something something",
 			expectedOutput: "<p>something something something</p>",
 		},
+		{
+			name: "Multi-line paragraph",
+			input: `line1
+line2`,
+			expectedOutput: `<p>line1
+line2</p>`,
+		},
 	}
 
 	for testNum, test := range tests {
