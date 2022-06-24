@@ -1,8 +1,5 @@
 # Markdown Converter
 
-## Table of contents
-
----
 Convert markdown files to HTML in your terminal!
 
 Currently supports headers and anchor tags.
@@ -15,7 +12,6 @@ Run `./target/bin/markdown-converter -in ./test/sample_inputs/sample1.md -out ta
 
 ## Running the program
 
----
 ### Native Binary
 `./target/bin/markdown-converter -in <myMarkdownFile.md> -out myConvertedMarkdownFile.html` 
 
@@ -57,7 +53,6 @@ After this, you should see the converted file in the `output` directory in your 
 
 ## Building the program
 
----
 ### Native Binary
 Run `make build-binary`
 
@@ -67,8 +62,6 @@ The binary will be created under the `./target/bin/` directory.
 Run `make container`
 
 ## Design Considerations
-
----
 
 There were a couple design tradeoffs I had to make:
 
