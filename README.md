@@ -63,6 +63,9 @@ The binary will be created under the `./target/bin/` directory.
 ### Docker container
 Run `make container`
 
+## Running Tests
+Run `make test`
+
 ## Design Considerations
 
 There were a couple design tradeoffs I had to make:
