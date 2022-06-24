@@ -46,6 +46,38 @@ func MarkdownToHtmlNoWrap(input io.Reader, output io.Writer) error {
 	return markdownToHtml(input, output, false)
 }
 
+// This wrapping logic is probably easier and cleaner if we used a template.
+// The reason we went with a manual write is to handle a "large" or streaming input
+//
+// In most cases, a template should suffice.
+func markdownToHtml(input io.Reader, output io.Writer, wrapWithHtmlSkeleton bool) error {
+	if !wrapWithHtmlSkeleton {
+		err := convertInput(input, output)
+		if err != nil {
+			return errors.Wrap(err, "converting input to html")
+		}
+
+		return nil
+	}
+
+	_, err := output.Write([]byte(beginningHtmlBoilerplate))
+	if err != nil {
+		return errors.Wrap(err, "writing beginning html boilerplate")
+	}
+
+	err = convertInput(input, output)
+	if err != nil {
+		return errors.Wrap(err, "converting input to html")
+	}
+
+	_, err = output.Write([]byte(endingHtmlBoilerplate))
+	if err != nil {
+		return errors.Wrap(err, "writing ending html boilerplate")
+	}
+
+	return nil
+}
+
 func convertInput(input io.Reader, output io.Writer) error {
 	scanner := bufio.NewScanner(input)
 
@@ -111,38 +143,6 @@ func convertHeader(line []byte) []byte {
 	headerSizeStr := fmt.Sprint(headerSize)
 
 	return header.ReplaceAll(line, []byte(`<h`+headerSizeStr+`>`+`$2`+`</h`+headerSizeStr+`>`))
-}
-
-// This wrapping logic is probably easier and cleaner if we used a template.
-// The reason we went with a manual write is to handle a "large" or streaming input
-//
-// In most cases, a template should suffice.
-func markdownToHtml(input io.Reader, output io.Writer, wrapWithHtmlSkeleton bool) error {
-	if !wrapWithHtmlSkeleton {
-		err := convertInput(input, output)
-		if err != nil {
-			return errors.Wrap(err, "converting input to html")
-		}
-
-		return nil
-	}
-
-	_, err := output.Write([]byte(beginningHtmlBoilerplate))
-	if err != nil {
-		return errors.Wrap(err, "writing beginning html boilerplate")
-	}
-
-	err = convertInput(input, output)
-	if err != nil {
-		return errors.Wrap(err, "converting input to html")
-	}
-
-	_, err = output.Write([]byte(endingHtmlBoilerplate))
-	if err != nil {
-		return errors.Wrap(err, "writing ending html boilerplate")
-	}
-
-	return nil
 }
 
 func isFormattingToken(char byte) bool {
