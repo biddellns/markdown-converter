@@ -89,7 +89,7 @@ func convertInput(input io.Reader, output io.Writer) error {
 		if len(line) != 0 {
 			firstChar := line[0]
 			// If it isn't a formatting token, it's plaintext, ready for a <p> tag
-			if !isFormattedText(line) {
+			if !startsWithFormattedText(line) {
 				if !paragraphOpen {
 					line = p.ReplaceAll(line, []byte(`<p>$1`))
 					paragraphOpen = true
@@ -149,6 +149,6 @@ func convertHeader(line []byte) []byte {
 // According to the spec,
 // 		A line of `[Link text](https://www.example.com)`
 //		should be `<a href="https://www.example.com">Link text</a>`
-func isFormattedText(line []byte) bool {
+func startsWithFormattedText(line []byte) bool {
 	return line[0] == linkToken || header.Match(line)
 }
