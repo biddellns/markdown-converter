@@ -81,7 +81,7 @@ func markdownToHtml(input io.Reader, output io.Writer, wrapWithHtmlSkeleton bool
 func convertInput(input io.Reader, output io.Writer) error {
 	scanner := bufio.NewScanner(input)
 
-	paragraphOpen := false
+	isParagraphOpen := false
 
 	for scanner.Scan() {
 		line := bytes.TrimSpace(scanner.Bytes())
@@ -90,9 +90,9 @@ func convertInput(input io.Reader, output io.Writer) error {
 			firstChar := line[0]
 			// If it isn't a formatting token, it's plaintext, ready for a <p> tag
 			if !startsWithFormattedText(line) {
-				if !paragraphOpen {
+				if !isParagraphOpen {
 					line = p.ReplaceAll(line, []byte(`<p>$1`))
-					paragraphOpen = true
+					isParagraphOpen = true
 				}
 
 				// If the paragraph is open, ensure that we have a new line for the next text block.
@@ -105,10 +105,10 @@ func convertInput(input io.Reader, output io.Writer) error {
 			}
 			line = a.ReplaceAll(line, []byte(`<a href="$2">$1</a>`))
 		} else {
-			if paragraphOpen {
+			if isParagraphOpen {
 				line = []byte(`</p>`)
 				line = append(line, newLine)
-				paragraphOpen = false
+				isParagraphOpen = false
 			} else {
 				line = []byte{newLine}
 			}
@@ -121,7 +121,7 @@ func convertInput(input io.Reader, output io.Writer) error {
 	}
 
 	// If last item is a paragraph, ensure it gets closed
-	if paragraphOpen {
+	if isParagraphOpen {
 		_, err := output.Write([]byte(`</p>`))
 		if err != nil {
 			return errors.Wrap(err, "writing output")
@@ -131,7 +131,39 @@ func convertInput(input io.Reader, output io.Writer) error {
 	return nil
 }
 
+func convertLine(line []byte, isParagraphOpen bool) ([]byte, bool) {
+	if len(line) == 0 {
+		if isParagraphOpen {
+			line = []byte(`</p>`)
+			line = append(line, newLine)
+			return line, false
+		} else {
+			return []byte{newLine}, isParagraphOpen
+		}
+	}
+
+	if startsWithFormattedText(line) {
+		line = convertHeader(line)
+	} else {
+		if !isParagraphOpen {
+			line = p.ReplaceAll(line, []byte(`<p>$1`))
+			return line, true
+		}
+
+		// If the paragraph is open, ensure that we have a new line for the next text block.
+		line = append([]byte{'\n'}, line...)
+	}
+
+	line = a.ReplaceAll(line, []byte(`<a href="$2">$1</a>`))
+
+	return line, isParagraphOpen
+}
+
 func convertHeader(line []byte) []byte {
+	if line[0] != headerToken {
+		return line
+	}
+
 	headerSize := 1
 	for _, t := range line[1:6] {
 		if t != headerToken {
