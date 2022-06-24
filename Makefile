@@ -2,8 +2,10 @@ REGISTRY ?= interview
 IMAGE ?= markdown-converter
 TAG ?= latest
 
+.PHONY: all
 all: container
 
+.PHONY: container
 container:
 	docker build -t $(REGISTRY)/$(IMAGE):$(TAG) .
 
