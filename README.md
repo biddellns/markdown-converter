@@ -10,6 +10,8 @@ Run `make build-binary`
 
 Run `./target/bin/markdown-converter -in ./test/sample_inputs/sample1.md -out tada.html`
 
+Run `cat tada.html`
+
 ## Running the program
 
 ### Native Binary
