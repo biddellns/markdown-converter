@@ -4,6 +4,15 @@ Convert markdown files to HTML in your terminal!
 
 Currently supports headers and anchor tags.
 
+## Prereqs
+
+Required tools:
+- Go 1.18
+- Make (optional)
+- Docker (optional)
+
+If you don't have / want to install make, you can still look inside the [Makefile](./Makefile) for documented commands.
+
 ## Quickstart
 
 Run `make build-binary`
