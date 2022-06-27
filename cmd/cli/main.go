@@ -28,44 +28,24 @@ func run() error {
 		return nil
 	}
 
-	isFlagValueProvided := map[string]bool{
+	isRequiredFlagValueProvided := map[string]bool{
 		"in":  false,
 		"out": false,
 	}
 
 	flag.CommandLine.Visit(func(f *flag.Flag) {
-		if _, ok := isFlagValueProvided[f.Name]; ok {
-			isFlagValueProvided[f.Name] = true
+		if _, ok := isRequiredFlagValueProvided[f.Name]; ok {
+			isRequiredFlagValueProvided[f.Name] = true
 		}
 	})
 
-	for flagName, isSet := range isFlagValueProvided {
+	for flagName, isSet := range isRequiredFlagValueProvided {
 		if !isSet {
 			return fmt.Errorf("'%s' is required", flagName)
 		}
 	}
 
-	srcFile, err := os.Open(*sourceFilenameFlag)
-	if err != nil {
-		return errors.Wrap(err, "opening source file")
-	}
-	defer srcFile.Close()
-
-	srcStat, err := srcFile.Stat()
-	if err != nil {
-		srcFile.Close()
-		return errors.Wrap(err, "getting srcFile stat")
-	}
-
-	if srcStat.IsDir() {
-		srcFile.Close()
-		return errors.New("source input cannot be a directory")
-	}
-
-	if srcStat.Size() == 0 {
-		srcFile.Close()
-		return errors.New("source file is empty")
-	}
+	srcFile, err := openSourceFile(*sourceFilenameFlag)
 
 	destFile, err := os.Create(*destinationFilenameFlag)
 	if err != nil {
@@ -93,4 +73,30 @@ func run() error {
 	}
 
 	return nil
+}
+
+func openSourceFile(filename string) (*os.File, error) {
+	srcFile, err := os.Open(filename)
+	if err != nil {
+		return nil, errors.Wrap(err, "opening source file")
+	}
+	defer srcFile.Close()
+
+	srcStat, err := srcFile.Stat()
+	if err != nil {
+		srcFile.Close()
+		return nil, errors.Wrap(err, "getting srcFile stat")
+	}
+
+	if srcStat.IsDir() {
+		srcFile.Close()
+		return nil, errors.New("source input cannot be a directory")
+	}
+
+	if srcStat.Size() == 0 {
+		srcFile.Close()
+		return nil, errors.New("source file is empty")
+	}
+
+	return srcFile, nil
 }
